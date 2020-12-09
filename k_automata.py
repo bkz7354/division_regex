@@ -8,12 +8,13 @@ def bracket(string):
     return "(" + string + ")"
 
 class Node:
-    def __init__(self, n, r):
+    def __init__(self, n, r, k):
         self.nxt = {}
         self.nxt_add = set()
         
-        self.add_path((r*2)%n, "0")
-        self.add_path((r*2+1)%n, "1")
+        for i in range(k):
+            self.add_path((r*k + i)%n, str(i))
+        
 
     def add_path(self, to, e_str):
         if to in self.nxt:
@@ -31,10 +32,10 @@ class Node:
             return self.nxt[to]
         
 
-def get_base(n):
+def get_base(n, k):
     res = {}
     for r in range(n):
-        res[r] = Node(n, r)
+        res[r] = Node(n, r, k)
     return res
 
 def get_incoming(aut, r):
@@ -108,8 +109,8 @@ def remove_leading(reg_str):
         
  
 
-def get_regex(n):
-    aut = get_base(n)
+def get_regex(n, k):
+    aut = get_base(n, k)
 
     while len(aut) > 1:
         reduce(aut, select(aut))
