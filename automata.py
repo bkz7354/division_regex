@@ -90,7 +90,7 @@ def get_regex(n):
     while len(aut) > 1:
         reduce(aut, select(aut))
 
-    return "^" + bracket(aut[0].nxt[0]) + "*$"
+    return "^" + bracket(aut[0].nxt[0]) + "+$"
 
 
 def my_match(string, reg):
