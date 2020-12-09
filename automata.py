@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-import numpy as np
-import re
-import random as rnd
 
 def bracket(string):
     if len(string) == 1:
@@ -84,50 +81,37 @@ def select(aut):
             res = i
     return res
 
+def split_regex(reg_str):
+    prev = 0
+    br = 0
+    res = []
+
+    for i in range(len(reg_str)):
+        if reg_str[i] == "(":
+            br += 1
+        elif reg_str[i] == ")":
+            br -= 1
+        elif br == 0 and reg_str[i] == "|":
+            res.append(reg_str[prev:i+1])
+            prev = i+1
+    res.append(reg_str[prev:len(reg_str)])
+
+    return res
+
+
+def remove_leading(reg_str):
+    toks = split_regex(reg_str)
+    del toks[0]
+
+    res = "".join(toks)
+    return "(" + bracket(res) + bracket(reg_str) + "*)|0"
+        
+ 
+
 def get_regex(n):
     aut = get_base(n)
 
     while len(aut) > 1:
         reduce(aut, select(aut))
 
-    return "^" + bracket(aut[0].nxt[0]) + "+$"
-
-
-def my_match(string, reg):
-    return reg.match(string) is not None
-
-def divisible(k, n):
-    return k%n == 0
-
-def test(n):
-    regex_str = get_regex(n)
-    regex = re.compile(regex_str)
-
-    for i in range(10*n):
-        div = my_match(np.base_repr(i, 2), regex)
-        if div != divisible(i, n):
-            print(div, i%n)
-            print("test n = " + str(n) + " i = " + str(i) + " falied")
-            return False
-
-    print("test for " + str(n) + " successful")
-    return True
-
-def run_tests():
-    for i in range(1, 30):
-        if not test(i):
-            return False
-    return True
-
-
-def main():
-    if run_tests():
-        print("tested successfully")
-    
-    print()
-    print("regex for 5")
-    print(get_regex(5))
-    
-
-if __name__ == "__main__":
-    main()
+    return "^" + bracket(remove_leading(aut[0].nxt[0])) + "$"
